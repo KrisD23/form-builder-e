@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
+import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 const Home = () => {
   return (
@@ -9,7 +10,16 @@ const Home = () => {
         <div className="container mx-auto px-4 flex justify-between items-center">
           <h1 className="font-bold text-2xl">Form Builder</h1>
           <div>
-            <Button>Sign in</Button>
+            <SignedOut>
+              <SignInButton>
+                <Button>Sign in</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            </SignedIn>
           </div>
         </div>
       </header>
@@ -21,9 +31,16 @@ const Home = () => {
           <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
             Build forms, Collect responses and analyse data
           </p>
-          <Button asChild size="lg">
-            <Link href="/dashboard/forms/create">Create a Form</Link>
-          </Button>
+          <SignedIn>
+            <Button asChild size="lg">
+              <Link href="/dashboard/forms/create">Create a Form</Link>
+            </Button>
+          </SignedIn>
+          <SignedOut>
+            <SignInButton>
+              <Button>Get Started</Button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </div>
