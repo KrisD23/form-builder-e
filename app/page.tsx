@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React from "react";
 
 const Home = () => {
@@ -12,7 +13,19 @@ const Home = () => {
           </div>
         </div>
       </header>
-      <div className="bg-blue-50 flex-1">main</div>
+      <div className="bg-blue-50 flex-1">
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            Create Forms with Ease
+          </h2>
+          <p className="text-lg md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+            Build forms, Collect responses and analyse data
+          </p>
+          <Button asChild size="lg">
+            <Link href="/dashboard/forms/create">Create a Form</Link>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
