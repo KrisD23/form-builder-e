@@ -38,7 +38,7 @@ const Dashboard = () => {
         <div className="space-y-4">
           <div className="items-center flex justify-between border-b pb-4">
             <div>
-              <h3 className="font-medium">This iS title</h3>
+              <h3 className="font-medium">LinkedIn is toxic</h3>
               <p className="text-gray-500 mt-2">
                 responses . Created on 30 April 2025
               </p>
