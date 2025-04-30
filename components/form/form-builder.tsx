@@ -5,6 +5,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "sonner";
 
 const FormBuilder = () => {
   const [form, setForm] = useState({
@@ -41,7 +42,7 @@ const FormBuilder = () => {
         questions: prev.questions.filter((_, i) => i !== index),
       }));
     } else {
-      // toast.error("Form must have at least one question");
+      toast("At least one question is required.");
     }
   };
 
