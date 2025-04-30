@@ -42,13 +42,25 @@ const FormBuilder = () => {
         questions: prev.questions.filter((_, i) => i !== index),
       }));
     } else {
-      toast("At least one question is required.");
+      toast.error("Form must have at least one question");
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(form);
+    // validate form
+
+    if (!form.title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    const emptyQuestions = form.questions.some((q) => !q.text.trim());
+
+    if (emptyQuestions) {
+      toast.error("All questions must have text");
+      return;
+    }
   };
 
   return (
