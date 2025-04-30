@@ -1,3 +1,4 @@
+import FormBuilder from "@/components/form/form-builder";
 import React from "react";
 
 const page = () => {
@@ -9,6 +10,7 @@ const page = () => {
       </div>
 
       {/* Form Builder */}
+      <FormBuilder />
     </div>
   );
 };
