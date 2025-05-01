@@ -64,11 +64,29 @@ const FormBuilder = () => {
 
     try {
       setIsSubmitting(true);
-      // simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      toast.success("Form submitted successfully");
+
+      const response = await fetch("/api/forms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error);
+      }
+
+      const data = await response.json();
+
+      toast.success("Form created successfully", {
+        description: "your form has been saved successfully",
+      });
+      router.push(`/dahsboard/forms/${data.id}`);
+      router.refresh();
     } catch (error) {
-      console.log(error);
+      console.log("Error saving form", error);
+      toast.error("Error saving form");
     } finally {
       setIsSubmitting(false);
     }
