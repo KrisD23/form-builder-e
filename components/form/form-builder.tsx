@@ -6,8 +6,13 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const FormBuilder = () => {
+  const router = useRouter();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -25,16 +30,6 @@ const FormBuilder = () => {
       questions: [...prev.questions, { id: uuidv4(), text: "" }],
     }));
   };
-
-  const handleQuestionChange = (index: number, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      questions: prev.questions.map((question, i) =>
-        i === index ? { ...question, text: value } : question
-      ),
-    }));
-  };
-
   const removeQuestion = (index: number) => {
     if (form.questions.length > 1) {
       setForm((prev) => ({
@@ -46,20 +41,33 @@ const FormBuilder = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // validate form
+  const handleQuestionChange = (index: number, value: string) => {
+    const updatedQuestions = [...form.questions];
+    updatedQuestions[index].text = value;
+    setForm({ ...form, questions: updatedQuestions });
+  };
 
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    // validate form
     if (!form.title.trim()) {
       toast.error("Title is required");
       return;
     }
 
     const emptyQuestions = form.questions.some((q) => !q.text.trim());
-
     if (emptyQuestions) {
       toast.error("All questions must have text");
       return;
+    }
+
+    try {
+      setIsSubmitting(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -87,13 +95,15 @@ const FormBuilder = () => {
           />
         </div>
       </div>
-      <div className="spave-y-6">
+
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Questions</h3>
-          <Button variant={"outline"} type="button" onClick={addQuestion}>
+          <h3 className="tetx-lg font-medium">Questions</h3>
+          <Button variant="outline" type="button" onClick={addQuestion}>
             Add Question
           </Button>
         </div>
+
         {form.questions.map((question, index) => (
           <div key={question.id} className="space-y-2 p-4 border rounded-md">
             <div className="flex items-center justify-between">
@@ -111,9 +121,7 @@ const FormBuilder = () => {
             <Textarea
               id={`Question-${index}`}
               value={question.text}
-              onChange={(e) => {
-                handleQuestionChange(index, e.target.value);
-              }}
+              onChange={(e) => handleQuestionChange(index, e.target.value)}
               placeholder="Enter your question"
               className="mt-1"
             />
@@ -122,10 +130,17 @@ const FormBuilder = () => {
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button variant={"outline"} onClick={() => {}}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Saving..." : "Save"}
+        </Button>
       </div>
     </form>
   );
