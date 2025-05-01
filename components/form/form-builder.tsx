@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import { FormEvent, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -8,28 +9,44 @@ import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-const FormBuilder = () => {
+type Question = {
+  id: string;
+  text: string;
+};
+type FormBuilderProps = {
+  initialData: {
+    id?: string;
+    title: string;
+    description: string;
+    questions: Question[];
+  };
+  isEditing?: boolean;
+};
+export default function FormBuilder({
+  initialData,
+  isEditing = false,
+}: FormBuilderProps) {
   const router = useRouter();
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    questions: [
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    questions: initialData?.questions || [
       {
-        id: +uuidv4(),
+        id: "1",
         text: "",
       },
     ],
   });
 
   const addQuestion = () => {
-    setForm((prev: any) => ({
+    setForm((prev) => ({
       ...prev,
       questions: [...prev.questions, { id: uuidv4(), text: "" }],
     }));
   };
+
   const removeQuestion = (index: number) => {
     if (form.questions.length > 1) {
       setForm((prev) => ({
@@ -65,28 +82,33 @@ const FormBuilder = () => {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch("/api/forms", {
-        method: "POST",
+      const url = isEditing ? `/api/forms/${initialData?.id}` : "/api/forms";
+      const method = isEditing ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
       });
+
       if (!response.ok) {
         const error = await response.text();
         throw new Error(error);
       }
 
       const data = await response.json();
-
-      toast.success("Form created successfully", {
-        description: "your form has been saved successfully",
+      toast.success(isEditing ? "Form updated!" : "Form created!", {
+        description: "Your form has been saved successfully.",
       });
-      router.push(`/dahsboard/forms/${data.id}`);
+      router.push(`/dashboard/forms/${data.id}`);
       router.refresh();
     } catch (error) {
-      console.log("Error saving form", error);
-      toast.error("Error saving form");
+      console.error("Error saving form:", error);
+      toast.error("Error", {
+        description: "Something went wrong while saving your form.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -160,11 +182,13 @@ const FormBuilder = () => {
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save"}
+          {isSubmitting
+            ? "Saving..."
+            : isEditing
+            ? "Update Form"
+            : "Create Form"}
         </Button>
       </div>
     </form>
   );
-};
-
-export default FormBuilder;
+}
