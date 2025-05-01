@@ -1,16 +1,36 @@
-import React from "react";
+import FormList from "@/components/form/form-list";
+import prisma from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
 
-const page = () => {
+export default async function FormPage() {
+  const { userId, redirectToSignIn } = await auth();
+
+  if (!userId) return redirectToSignIn();
+
+  const forms = await prisma.form.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      _count: {
+        select: {
+          responses: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">My forms</h1>
-        <p className="text-gray-500 mt-5">Manage your forms and responses</p>
+        <h1 className="text-3xl font-bold">My Forms</h1>
+        <p className="text-gray-500 mt-1">Create and manage your forms</p>
       </div>
 
-      {/* Formlist */}
+      <FormList forms={forms} />
     </div>
   );
-};
-
-export default page;
+}
