@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { syncUserWithDatabase } from "@/lib/clerk-sync";
 import Link from "next/link";
 import React from "react";
 
-const Dashboard = () => {
+const Dashboard = async () => {
+  // Sync user with database
+  await syncUserWithDatabase();
+
   return (
     <div className="space-y-6 p-5">
       <div>
