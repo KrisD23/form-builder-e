@@ -64,6 +64,9 @@ const FormBuilder = () => {
 
     try {
       setIsSubmitting(true);
+      // simulate form submission
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      toast.success("Form submitted successfully");
     } catch (error) {
       console.log(error);
     } finally {
